@@ -20,7 +20,7 @@ function comb(start, temp) {
     return;
   }
   for (let i = start + 1; i < chicken.length; i++) {
-    temp.push(i);
+    temp.push(chicken[i]);
     comb(i, temp);
     temp.pop();
   }
@@ -46,9 +46,7 @@ rl.on("line", (line) => {
     for (let _home of home) {
       let mn = 987654321;
       for (let ch of _chicken) {
-        // console.log(ch);
-        let dist =
-          Math.abs(_home.y - chicken[ch].y) + Math.abs(_home.x - chicken[ch].x);
+        let dist = Math.abs(_home.y - ch.y) + Math.abs(_home.x - ch.x);
         mn = Math.min(mn, dist);
       }
       ret += mn;
