@@ -5,30 +5,27 @@ const rl = readline.createInterface({
 });
 
 let input = [];
-let temp,
-  ret = 0;
 rl.on("line", (line) => {
   input.push(line);
 }).on("close", () => {
   const [n, m] = input[0].split(" ").map(Number);
-  const a = input.slice(1, input.length).map(Number);
-  let l = 1,
-    r;
-  const j = input.length;
-  for (let i = 1; i <= j; i++) {
-    r = l + m - 1;
-    temp = a[i];
-    // console.log(temp, l, r, ret);
-    if (l <= temp && r >= temp) continue;
+  input = input.slice(2).map(Number);
+  let left = 1;
+  let right;
+  let cnt = 0;
+  input.forEach((value) => {
+    right = left + m - 1;
+    if (left <= value && right >= value) return;
     else {
-      if (temp > r) {
-        l += temp - r;
-        ret += temp - r;
-      } else if (temp < l) {
-        ret += l - temp;
-        l = temp;
+      if (right < value) {
+        left += value - right;
+        cnt += value - right;
+      } else if (left > value) {
+        cnt += left - value;
+        left = value;
       }
     }
-  }
-  console.log(ret);
+  });
+  console.log(cnt);
+  process.exit();
 });
