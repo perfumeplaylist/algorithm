@@ -1,32 +1,36 @@
-const fs=require('fs');
-const input=fs.readFileSync("/dev/stdin").toString().trim().split('\n');
-const nums = input.map(v => v.split(' ').map(v=>+v));
-const n=nums[0].shift()
-const c=nums[0].shift()
+const readline = require("readline");
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-let array=[]
-
-for(let i=0;i<n;i++) array.push(nums[1][i])
-
-
-let map=new Map()
-for(let i=0;i<n;i++){
-    if(!map.has(array[i])) map.set(array[i],1)//맵에 없는 요소라면 value 값 1
-    else map.set(array[i],map.get(array[i])+1)//맵에 있으면 원래 value 값에 +1
-}
-let mapToArray=[] //정렬위해 맵을 2차원배열로 만들기 위함
-map.forEach((value,key)=>{
-    mapToArray.push([key,value]) //[][0]에는 key값,[][1]에는 value값
-})
-mapToArray.sort((a,b)=>{
-    return b[1]-a[1]
-}) //value 값에 따라 정렬
-
-
-let answer="" //정답 담기위한 변수, 시간초과때문에 console.log 한번만 하기 위함
-
-for(let i=0;i<mapToArray.length;i++){
-    answer+=Array(mapToArray[i][1]).fill(mapToArray[i][0]).join(" ")+" "
-}
-
-console.log(answer)
+let input = [];
+rl.on("line", (line) => {
+  input.push(line);
+}).on("close", () => {
+  const temp = input.map((value) => value.split(" ").map(Number));
+  const [n, m] = temp[0];
+  const ret = {};
+  let retString = "";
+  for (let i = 0; i < n; i++) {
+    if (ret[temp[1][i]]) ret[temp[1][i]].cnt++;
+    else {
+      ret[temp[1][i]] = { cnt: 1, i };
+    }
+  }
+  const tempObj = JSON.parse(JSON.stringify(ret));
+  const tempArray = [];
+  for (const obj in tempObj) tempArray.push({ key: obj, value: tempObj[obj] });
+  tempArray.sort((a, b) => {
+    if (a.value.cnt === b.value.cnt) return a.value.i > b.value.i ? 1 : -1;
+    return a.value.cnt > b.value.cnt ? -1 : 1;
+  });
+  for (const arr of tempArray) {
+    const {
+      key,
+      value: { cnt },
+    } = arr;
+    for (let i = 0; i < cnt; i++) retString += key + " ";
+  }
+  console.log(retString);
+});
