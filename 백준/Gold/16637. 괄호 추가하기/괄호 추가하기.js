@@ -5,39 +5,47 @@ const rl = readline.createInterface({
 });
 
 let input = [];
-let num = [],
-  opear = [];
-
-let mx = -987654321;
-
-function oper(a, b, c) {
-  if (b === "+") return a + c;
-  else if (b === "-") return a - c;
-  else if (b === "*") return a * c;
-}
-
-function go(idx, ret) {
-  if (idx === num.length - 1) {
-    mx = Math.max(mx, ret);
-    return;
-  }
-  go(idx + 1, oper(ret, opear[idx], num[idx + 1]));
-  if (idx + 2 < num.length) {
-    const temp = oper(num[idx + 1], opear[idx + 1], num[idx + 2]);
-    go(idx + 2, oper(ret, opear[idx], temp));
-  }
-  return;
-}
-
 rl.on("line", (line) => {
   input.push(line);
 }).on("close", () => {
-  const n = Number(input[0]);
-  const a = input[1].split("");
-  for (let i = 0; i < n; i++) {
-    if (a[i] >= 0 && a[i] <= 9) num.push(Number(a[i]));
-    else opear.push(a[i]);
+  const num = [];
+  const opear_array = [];
+  let ret = -987654321;
+  input[1].split("").forEach((item) => {
+    if (item.charCodeAt(0) >= 48 && item.charCodeAt(0) <= 57) {
+      num.push(Number(item));
+    } else {
+      opear_array.push(item);
+    }
+  });
+
+  function opear(a, opear, b) {
+    if (opear === "+") return a + b;
+    else if (opear === "-") return a - b;
+    else if (opear === "*") return a * b;
   }
-  go(0, num[0]);
-  console.log(mx);
+
+  function go(start, index) {
+    if (index === num.length - 1) {
+      ret = Math.max(ret, start);
+      return;
+    }
+    go(opear(start, opear_array[index], num[index + 1]), index + 1);
+    if (index + 2 <= num.length - 1) {
+      go(
+        opear(
+          start,
+          opear_array[index],
+          opear(num[index + 1], opear_array[index + 1], num[index + 2])
+        ),
+        index + 2
+      );
+    }
+    return;
+  }
+
+  go(num[0], 0);
+  console.log(ret);
+
+  process.exit();
 });
