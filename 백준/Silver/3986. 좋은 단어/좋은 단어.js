@@ -3,28 +3,29 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+
 let input = [];
-
-function solution() {
-  let answer = 0;
-  let n = Number(input[0]);
-  for (i = 1; i <= n; i++) {
-    const temp = input[i];
-    const stk = [];
-    for (let s of temp) {
-      if (stk.at(-1) === s) {
-        stk.pop();
-      } else {
-        stk.push(s);
-      }
-    }
-    if (stk.length === 0) answer++;
-  }
-  console.log(answer);
-}
-
 rl.on("line", (line) => {
   input.push(line);
 }).on("close", () => {
-  solution();
+  const n = parseInt(input[0], 10);
+  let cnt = 0;
+  for (let i = 1; i <= n; i++) {
+    const temp = input[i];
+    let stk = [];
+    for (let k = 0; k < temp.length; k++) {
+      if (stk.length) {
+        if (stk[stk.length - 1] === temp[k]) {
+          stk.pop();
+        } else {
+          stk.push(temp[k]);
+        }
+      } else {
+        stk.push(temp[k]);
+      }
+    }
+    if (!stk.length) cnt++;
+  }
+  console.log(cnt);
+  process.exit();
 });
