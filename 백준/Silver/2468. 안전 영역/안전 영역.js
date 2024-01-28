@@ -1,41 +1,45 @@
-const fs = require('fs');
-let input = fs.readFileSync("./dev/stdin").toString().trim().split("\n").map(v=>v.split(' ').map(x=>+x));
-input.shift();
-const L = input.length;
-const dir = [
-  [-1,0],
-  [0,1],
-  [1,0],
-  [0,-1],
-]
+const readline = require("readline");
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-const answer = [];
+let input = [];
+const dy = [-1, 0, 1, 0];
+const dx = [0, 1, 0, -1];
 
-for(let h = 0; h<=100; h++){
-let safe = 0;
-const map = JSON.parse(JSON.stringify(input))
-for(let i = 0; i< L; i++){
-  for(let j = 0; j<L; j++){
-    if(map[i][j]>h){
-      safe++;
-      map[i][j]=0;
-      let q = [[i,j]];
-      while(q.length>0){
-        const [r,c]= q.shift();
-        dir.forEach(v=>{
-          const x = v[0];
-          const y = v[1];
-          if(x+r>=0 && x+r<L && y+c>=0 && y+c<L && map[x+r][y+c]>h){
-            map[x+r][y+c]=h;
-            q.push([x+r,y+c])
-          }
-        })
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  const n = parseInt(input[0], 10);
+  const a = input.slice(1).map((line) => line.split(" ").map(Number));
+  let mx = -987654321;
+  let visited = [];
+
+  function go(y, x, i, visited) {
+    visited[y][x] = 1;
+    for (let k = 0; k < 4; k++) {
+      let ny = y + dy[k];
+      let nx = x + dx[k];
+      if (ny < 0 || nx < 0 || ny >= n || nx >= n || visited[ny][nx]) continue;
+      if (a[ny][nx] > i) {
+        go(ny, nx, i, visited);
       }
     }
   }
-}
 
-answer.push(safe)
-}
+  for (let i = 0; i <= 100; i++) {
+    visited = Array.from({ length: n }, () => Array(n).fill(0));
+    let cnt = 0;
+    for (let y = 0; y < n; y++) {
+      for (let x = 0; x < n; x++) {
+        if (a[y][x] > i && !visited[y][x]) {
+          cnt++;
+          go(y, x, i, visited);
+        }
+      }
+    }
+    mx = Math.max(mx, cnt);
+  }
 
-console.log(Math.max(...answer))
+  console.log(mx);
+  process.exit();
+});
