@@ -5,58 +5,48 @@ const rl = readline.createInterface({
 });
 
 let input = [];
-let cnt = 0,
-  n,
-  m,
-  k,
-  ny,
-  nx;
-let ret = [];
 const dy = [-1, 0, 1, 0];
 const dx = [0, 1, 0, -1];
 
-const arr = new Array(104).fill(0).map(() => new Array(104).fill(0));
-const visited = new Array(104).fill(0).map(() => new Array(104).fill(0));
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  const [n, m, k] = input[0].split(" ").map(Number);
+  const a = Array.from({ length: n }, () => Array(m).fill(0));
+  let visited = Array.from({ length: n }, () => Array(m).fill(0));
+  const temp = input.slice(1).map((line) => line.split(" ").map(Number));
+  let ret = [];
+  let cnt = 0;
 
-function dfs(y, x) {
-  visited[y][x] = 1;
-  let ret = 1;
-  for (let i = 0; i < 4; i++) {
-    ny = y + dy[i];
-    nx = x + dx[i];
-    if (
-      ny < 0 ||
-      nx < 0 ||
-      ny >= n ||
-      nx >= m ||
-      visited[ny][nx] ||
-      arr[ny][nx]
-    )
-      continue;
-    ret += dfs(ny, nx);
+  function go(y, x) {
+    let cnt = 1;
+    visited[y][x] = 1;
+    for (let i = 0; i < 4; i++) {
+      let ny = y + dy[i];
+      let nx = x + dx[i];
+      if (ny < 0 || nx < 0 || ny >= n || nx >= m || visited[ny][nx]) continue;
+      if (!a[ny][nx]) {
+        cnt += go(ny, nx);
+      }
+    }
+    return cnt;
   }
-  return ret;
-}
 
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  [n, m, k] = input[0].split(" ").map(Number);
-  const a = input.slice(1, input.length).map((el) => el.split(" ").map(Number));
-  for (let h = 0; h < k; h++) {
-    const [lx, ly, rx, ry] = a[h];
-    for (let i = ly; i < ry; i++) {
-      for (let j = lx; j < rx; j++) arr[i][j] = 1;
+  for (let i = 0; i < k; i++) {
+    const [lx, ly, rx, ry] = temp[i];
+    for (let y = ly; y < ry; y++) {
+      for (let x = lx; x < rx; x++) a[y][x] = 1;
     }
   }
+
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < m; j++) {
-      if (!arr[i][j] && !visited[i][j]) {
+      if (!visited[i][j] && !a[i][j]) {
         cnt++;
-        ret.push(dfs(i, j));
+        ret.push(go(i, j));
       }
     }
   }
+
   console.log(cnt);
   console.log(ret.sort((a, b) => a - b).join(" "));
+  process.exit();
 });
