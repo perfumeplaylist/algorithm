@@ -6,31 +6,31 @@ const rl = readline.createInterface({
 
 let input = [];
 
-function go(y, x, size) {
-  let now = Number(input[y][x]);
-  if (size === 1) {
-    return now;
-  }
-  let ret = "";
-  for (let i = y; i < y + size; i++) {
-    for (let j = x; j < x + size; j++) {
-      if (Number(input[i][j]) !== now) {
-        ret += "(";
-        ret += go(y, x, size / 2);
-        ret += go(y, x + size / 2, size / 2);
-        ret += go(y + size / 2, x, size / 2);
-        ret += go(y + size / 2, x + size / 2, size / 2);
-        ret += ")";
-        return ret;
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  const n = parseInt(input[0], 10);
+  const a = input.slice(1).map((line) => line.split("").map(Number));
+
+  function go(y, x, size) {
+    if (size === 1) return a[y][x];
+    let prev = a[y][x];
+    let ret = "";
+    for (let i = y; i < y + size; i++) {
+      for (let j = x; j < x + size; j++) {
+        if (prev !== a[i][j]) {
+          ret += "(";
+          ret += go(y, x, size / 2);
+          ret += go(y, x + size / 2, size / 2);
+          ret += go(y + size / 2, x, size / 2);
+          ret += go(y + size / 2, x + size / 2, size / 2);
+          ret += ")";
+          return ret;
+        }
+        prev = a[i][j];
       }
     }
+    return String(a[y][x]);
   }
-  return now;
-}
 
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  console.log(go(1, 0, Number(input[0])));
+  console.log(go(0, 0, n));
   process.exit();
 });
