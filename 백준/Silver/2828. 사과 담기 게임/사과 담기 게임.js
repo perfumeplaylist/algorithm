@@ -1,31 +1,28 @@
 const readline = require("readline");
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout,
+  output: process.stdin,
 });
 
 let input = [];
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
+rl.on("line", (line) => input.push(line)).on("close", () => {
   const [n, m] = input[0].split(" ").map(Number);
-  input = input.slice(2).map(Number);
-  let left = 1;
-  let right;
-  let cnt = 0;
-  input.forEach((value) => {
-    right = left + m - 1;
-    if (left <= value && right >= value) return;
-    else {
-      if (right < value) {
-        left += value - right;
-        cnt += value - right;
-      } else if (left > value) {
-        cnt += left - value;
-        left = value;
-      }
+  const j = parseInt(input[1], 10);
+  const a = input.slice(2).map(Number);
+  let cnt = 0,
+    l = 1;
+  for (let i = 0; i < j; i++) {
+    const temp = a[i];
+    let r = l + m - 1;
+    if (temp >= l && temp <= r) continue;
+    if (temp > r) {
+      l += temp - r;
+      cnt += temp - r;
+    } else if (temp < l) {
+      cnt += l - temp;
+      l = temp;
     }
-  });
+  }
   console.log(cnt);
   process.exit();
 });
