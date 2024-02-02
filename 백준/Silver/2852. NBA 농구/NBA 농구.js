@@ -1,46 +1,54 @@
-const readline = require("readline");
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+// 2852
 
-let input = [];
-let A = (B = asum = bsum = prev = 0);
+const format = (second) => {
+  const mins = Math.floor(second / 60)
+    .toString()
+    .padStart(2, "0");
+  const ss = (second % 60).toString().padStart(2, "0");
+  return `${mins}:${ss}`;
+};
 
-function changeTime(time) {
-  const min = Number(time.substring(0, 2));
-  const sec = Number(time.substring(3));
-  return min * 60 + sec;
-}
+{
+  const fs = require("fs");
+  const input =
+    process.platform === "linux"
+      ? fs.readFileSync("/dev/stdin").toString().trim()
+      : fs.readFileSync("bigStone/input.txt").toString().trim();
 
-function getWinerTime(score) {
-  return changeTime(score) - changeTime(prev);
-}
+  const [N, ...arr] = input.split("\n");
 
-function printTime(sum) {
-  const min = "00" + Math.floor(sum / 60);
-  const sec = "00" + Math.floor(sum % 60);
-  return (
-    min.substring(min.length - 2, min.length) +
-    ":" +
-    sec.substring(sec.length - 2, sec.length)
-  );
-}
+  let point1 = 0,
+    point2 = 0;
 
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  const n = Number(input[0]);
-  for (let i = 1; i <= n; i++) {
-    const [team, score] = input[i].split(" ");
-    if (A > B) asum += getWinerTime(score);
-    else if (B > A) bsum += getWinerTime(score);
-    team === "1" ? A++ : B++;
-    prev = score;
+  const playTime = 48 * 60;
+
+  let aSum = 0,
+    bSum = 0;
+  let lastTime = 0;
+
+  for (let i = 0; i < N; i += 1) {
+    const [team, time] = arr[i].split(" ");
+    const [m, s] = time.split(":").map(Number);
+    const second = m * 60 + s;
+
+    if (point1 > point2) {
+      aSum += second - lastTime;
+    }
+
+    if (point2 > point1) {
+      bSum += second - lastTime;
+    }
+
+    team === "1" ? (point1 += 1) : (point2 += 1);
+    lastTime = second;
   }
-  if (A > B) asum += getWinerTime("48:00");
-  else if (A < B) bsum += getWinerTime("48:00");
-  console.log(printTime(asum));
-  console.log(printTime(bsum));
-  process.exit();
-});
+
+  if (point1 > point2) {
+    aSum += playTime - lastTime;
+  }
+
+  if (point2 > point1) {
+    bSum += playTime - lastTime;
+  }
+  console.log(`${format(aSum)}\n${format(bSum)}`);
+}
