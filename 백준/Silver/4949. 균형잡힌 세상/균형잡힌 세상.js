@@ -6,34 +6,29 @@ const rl = readline.createInterface({
 
 let input = [];
 
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  for (let i = 0; i < input.length; i++) {
-    const temp = input[i];
-    if (temp === ".") break;
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  input.forEach((str) => {
+    if (str === ".") return;
     let stk = [];
-    let flag = 0;
-    for (let j = 0; j < temp.length; j++) {
-      let t = temp[j];
-      if (t === "(" || t === "[") stk.push(t);
-      else if (t === ")" || t === "]") {
-        if (stk.length) {
-          const temp1 = stk[stk.length - 1];
-          if ((temp1 === "(" && t === ")") || (temp1 === "[" && t === "]"))
-            stk.pop();
-          else {
-            flag = 1;
-            break;
-          }
-        } else {
-          flag = 1;
-          break;
+    let balanced = true; // 균형 상태를 추적하는 플래그
+    for (let i = 0; i < str.length && balanced; i++) {
+      let char = str[i];
+      if (char === "(" || char === "[") {
+        stk.push(char);
+      } else if (char === ")" || char === "]") {
+        if (stk.length === 0) {
+          balanced = false;
+          break; // 스택이 비어있으면 불균형 상태
+        }
+        const top = stk.pop();
+        if ((char === ")" && top !== "(") || (char === "]" && top !== "[")) {
+          balanced = false;
+          break; // 괄호의 짝이 맞지 않으면 불균형 상태
         }
       }
-      if (flag) break;
     }
-    if (flag || stk.length) console.log("no");
-    else console.log("yes");
-  }
+    if (balanced && stk.length === 0) console.log("yes");
+    else console.log("no");
+  });
+  process.exit();
 });
