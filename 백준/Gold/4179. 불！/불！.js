@@ -1,124 +1,70 @@
-class Queue {
-  constructor() {
-    this.data = [];
-    this.head = 0;
-    this.tail = 0;
-  }
+const input = require('fs').readFileSync(process.version === 'v18.17.1' ? 'input.txt' : '/dev/stdin')
+  .toString().trim().split("\n");
 
-  push(item) {
-    this.data[this.tail++] = item;
-  }
+const solution = () => {
+  const [N, M] = input[0].split(" ").map(Number);
+  const maze = input.slice(1).map(row => row.split(""));
 
-  pop() {
-    this.head++;
-  }
+  const dx = [-1, 0, 1, 0];
+  const dy = [0, 1, 0, -1];
 
-  front() {
-    return this.data[this.head];
-  }
+  const time = bfs();
+  console.log(time);
 
-  rear() {
-    return this.data[this.tail - 1];
-  }
+  function bfs() {
+    let jihun = [];
+    let fire = [];
 
-  isEmpty() {
-    return this.head === this.tail;
-  }
-
-  size() {
-    return Math.abs(this.head - this.tail);
-  }
-}
-
-const filePath = process.platform === 'linux' ? '/dev/stdin' : './input.txt';
-const input = require('fs')
-  .readFileSync(filePath)
-  .toString()
-  .trim()
-  .split('\n');
-
-const [R, C] = input[0].split(' ').map(Number);
-const fire = new Queue();
-const jihun = new Queue();
-const map = Array.from({ length: R }, () => Array(C));
-for (let i = 1; i <= R; i++) {
-  const temp = input[i].split('');
-  for (let j = 0; j < C; j++) {
-    if (temp[j] === 'J') {
-      jihun.push([i - 1, j, 1]);
-      map[i - 1][j] = 0;
-    } else if (temp[j] === 'F') {
-      fire.push([i - 1, j]);
-      map[i - 1][j] = 1;
-    } else if (temp[j] === '#') {
-      map[i - 1][j] = -1;
-    } else {
-      map[i - 1][j] = 0;
-    }
-  }
-}
-let visited;
-const dir = [
-  [-1, 0],
-  [1, 0],
-  [0, -1],
-  [0, 1],
-];
-
-fireBfs();
-jihunBfs();
-
-function fireBfs() {
-  visited = Array.from({ length: R }, () => Array(C).fill(false));
-  for (const [x, y] of fire.data) {
-    visited[x][y] = true;
-  }
-
-  while (!fire.isEmpty()) {
-    const [x, y] = fire.front();
-    fire.pop();
-
-    for (let k = 0; k < 4; k++) {
-      const nx = x + dir[k][0];
-      const ny = y + dir[k][1];
-
-      if (nx < 0 || ny < 0 || nx >= R || ny >= C) continue;
-      if (map[nx][ny] !== 0 || visited[nx][ny]) continue;
-
-      map[nx][ny] = map[x][y] + 1;
-      visited[nx][ny] = true;
-      fire.push([nx, ny]);
-    }
-  }
-}
-
-function jihunBfs() {
-  visited = Array.from({ length: R }, () => Array(C).fill(false));
-  const [x, y] = jihun.front();
-  visited[x][y] = true;
-
-  while (!jihun.isEmpty()) {
-    const [x, y, cnt] = jihun.front();
-    jihun.pop();
-
-    for (let k = 0; k < 4; k++) {
-      const nx = x + dir[k][0];
-      const ny = y + dir[k][1];
-
-      if (nx < 0 || ny < 0 || nx >= R || ny >= C) {
-        console.log(cnt);
-        return;
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < M; j++) {
+        if (maze[i][j] === 'J') jihun.push([i, j]);
+        if (maze[i][j] === 'F') fire.push([i, j]);
       }
-      // 다음 시점에서 이미 불이 나있으면 못감
-      if (map[nx][ny] !== 0 && map[nx][ny] <= cnt + 1) continue;
-      if (visited[nx][ny]) continue;
-      // 벽일 때
-      if (map[nx][ny] === -1) continue;
-
-      visited[nx][ny] = true;
-      jihun.push([nx, ny, cnt + 1]);
     }
+
+    let time = 0;
+    while (jihun.length) {
+      time++;
+      const fireQueue = [];
+
+      for(let [x, y] of fire){
+        for(let i = 0; i < 4; i++){
+          const nx = x + dx[i]
+          const ny = y + dy[i]
+          if(isIn(nx, ny)){
+            if(maze[nx][ny] === '.' || maze[nx][ny] === 'J'){
+              maze[nx][ny] = 'F';
+              fireQueue.push([nx, ny]);
+            }
+          }
+        }
+      }
+      fire = [...fireQueue];
+
+      const jihunQueue = [];
+
+      for(let [x, y] of jihun){
+        for(let i = 0; i < 4; i++){
+          const nx = x + dx[i]
+          const ny = y + dy[i]
+          if(!isIn(nx, ny)){
+            return time;
+          }
+          if(maze[nx][ny] === '.'){
+            maze[nx][ny] = 'J';
+            jihunQueue.push([nx, ny]);
+          }
+        }
+      }
+      jihun = [...jihunQueue];
+    }
+
+    return "IMPOSSIBLE";
   }
 
-  console.log('IMPOSSIBLE');
-}
+  function isIn(nx, ny) {
+    return 0 <= nx && nx < N && 0 <= ny && ny < M;
+  }
+};
+
+solution();
