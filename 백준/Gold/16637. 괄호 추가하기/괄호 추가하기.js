@@ -1,51 +1,53 @@
-const readline = require("readline");
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = require("fs")
+  .readFileSync(
+    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input/16637.txt"
+  )
+  .toString()
+  .trim()
+  .split("\n");
 
-let input = [];
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  const num = [];
-  const opear_array = [];
-  let ret = -987654321;
-  input[1].split("").forEach((item) => {
-    if (item.charCodeAt(0) >= 48 && item.charCodeAt(0) <= 57) {
-      num.push(Number(item));
-    } else {
-      opear_array.push(item);
+const N = +input[0];
+const arr = input[1].split("");
+
+function solution(N, arr) {
+  let answer = -Infinity;
+
+  const cal = (num1, num2, op) => {
+    switch (op) {
+      case "+":
+        return num1 + num2;
+      case "-":
+        return num1 - num2;
+      case "*":
+        return num1 * num2;
+      default:
+        return 0;
     }
-  });
+  };
 
-  function opear(a, opear, b) {
-    if (opear === "+") return a + b;
-    else if (opear === "-") return a - b;
-    else if (opear === "*") return a * b;
-  }
+  const choice = (idx, val) => {
+    let flag = false;
 
-  function go(start, index) {
-    if (index === num.length - 1) {
-      ret = Math.max(ret, start);
+    if (idx >= N - 1) {
+      if (val > answer) answer = val;
       return;
     }
-    go(opear(start, opear_array[index], num[index + 1]), index + 1);
-    if (index + 2 <= num.length - 1) {
-      go(
-        opear(
-          start,
-          opear_array[index],
-          opear(num[index + 1], opear_array[index + 1], num[index + 2])
-        ),
-        index + 2
-      );
+
+    if (idx >= N - 3) flag = true;
+
+    let result1 = cal(Number(val), Number(arr[idx + 2]), arr[idx + 1]);
+    choice(idx + 2, result1);
+
+    if (!flag) {
+      let temp = cal(Number(arr[idx + 2]), Number(arr[idx + 4]), arr[idx + 3]);
+      let result2 = cal(Number(val), temp, arr[idx + 1]);
+      choice(idx + 4, result2);
     }
-    return;
-  }
+  };
 
-  go(num[0], 0);
-  console.log(ret);
+  choice(0, arr[0]);
 
-  process.exit();
-});
+  return answer;
+}
+
+console.log(solution(N, arr));
