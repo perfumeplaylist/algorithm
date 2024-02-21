@@ -1,48 +1,37 @@
-const readline = require("readline");
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs')
+let input = fs.readFileSync('/dev/stdin').toString().split('\n')
+const N = +input.shift();
 
-let input = [];
-let visited = new Array(10).fill(0);
-let n,
-  opear,
-  ret = [];
-
-function customSort(a, b) {
-  if (a.length === b.length) {
-    return a > b;
+let solution = (input, arr, transInput) => {
+  if (transInput) {
+    newInput = [];
+    input
+      .split(" ")
+      .reverse()
+      .map((char) => (char === "<" ? newInput.push(">") : newInput.push("<")));
+    input = [...newInput];
+  } else {
+    input = input.split(" ");
   }
-  return a.length > b.length;
-}
-function temp(prev, opear, curv) {
-  if (opear === ">") return prev > curv;
-  else if (opear === "<") return prev < curv;
-}
 
-function go(idx, prev) {
-  if (idx === opear.length + 1) {
-    ret.push(prev);
-    return;
-  }
-  for (let i = 0; i <= 9; i++) {
-    if (visited[i]) continue;
-    if (idx === 0 || temp(prev[idx - 1], opear[idx - 1], i)) {
-      visited[i] = 1;
-      go(idx + 1, prev + i.toString());
-      visited[i] = 0;
+  idx = 0;
+  foreIdx = 0;
+  tmp = [];
+  result = [];
+  input.map((value, index) => {
+    index++;
+    if (value === ">") {
+      result.push(...[...arr.slice(foreIdx, index).reverse()]);
+      foreIdx = index;
     }
+  });
+  if (result.length !== N + 1) {
+    result = [...result, ...arr.slice(result.length, N + 1).reverse()];
   }
-  return;
-}
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  n = Number(input[0]);
-  opear = input.slice(1)[0].split(" ");
-  go(0, "");
-  ret.sort((a, b) => customSort(a, b));
-  console.log(ret[ret.length - 1]);
-  console.log(ret[0]);
-});
+  return transInput ? result.reverse().join("") : result.join("");
+};
+
+let arr = new Array(N + 1).fill().map((_, idx) => 9 - idx);
+console.log(solution(input[0], arr, false));
+arr = new Array(N + 1).fill().map((_, idx) => N - idx);
+console.log(solution(input[0], arr, true));
