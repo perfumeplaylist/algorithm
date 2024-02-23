@@ -5,28 +5,24 @@ const rl = readline.createInterface({
 });
 
 let input = [];
-let a,
-  n,
-  ret = new Array(10).fill(0).map(() => new Array(0));
-
-function go(s, e, level) {
-  if (level === n - 1) {
-    ret[level].push(a[s]);
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  function go(l, r, idx) {
+    if (idx === n - 1) {
+      ret[idx].push(a[l]);
+      return;
+    }
+    let mid = Math.floor((l + r) / 2);
+    ret[idx].push(a[mid]);
+    go(l, mid - 1, idx + 1);
+    go(mid + 1, r, idx + 1);
     return;
   }
-  let mid = Math.floor((s + e) / 2);
-  ret[level].push(a[mid]);
-  go(s, mid - 1, level + 1);
-  go(mid + 1, e, level + 1);
-}
-
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  n = Number(input[0]);
-  a = input.slice(1)[0].split(" ");
+  const n = parseInt(input[0], 10);
+  const a = input[1].split(" ").map(Number);
+  let ret = Array.from({ length: n }, () => new Array(0));
   go(0, a.length, 0);
   for (let i = 0; i < n; i++) {
     console.log(ret[i].join(" "));
   }
+  process.exit();
 });
