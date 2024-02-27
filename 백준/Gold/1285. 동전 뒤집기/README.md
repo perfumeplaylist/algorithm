@@ -4,7 +4,7 @@
 
 ### 성능 요약
 
-메모리: 2024 KB, 시간: 332 ms
+메모리: 9980 KB, 시간: 1116 ms
 
 ### 분류
 
@@ -12,7 +12,7 @@
 
 ### 제출 일자
 
-2023년 1월 11일 16:19:22
+2024년 2월 27일 17:05:35
 
 ### 문제 설명
 
@@ -27,7 +27,7 @@
 <table class="table table-bordered td-center">
 	<tbody>
 		<tr>
-			<td><img alt="" src="" style="width: 150px; height: 151px;"></td>
+			<td><img alt="" src="https://upload.acmicpc.net/410bd5fd-cb16-4bfb-83af-7edd9882e188/-/preview/" style="width: 150px; height: 151px;"></td>
 			<td><img alt="" src="https://upload.acmicpc.net/ae08cc98-4db2-4df7-8bb6-0149d1ca59ba/-/preview/" style="width: 150px; height: 151px;"></td>
 		</tr>
 		<tr>
