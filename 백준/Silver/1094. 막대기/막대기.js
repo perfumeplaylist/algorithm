@@ -1,18 +1,19 @@
-const readline = require("readline");
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+var fs = require("fs");
+var target = fs.readFileSync('/dev/stdin').toString();
+// var target = fs.readFileSync("./stdin").toString();
+target = Number(target);
+let total = 64;
+let bars = [64];
 
-let input = [];
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  const x = Number(input[0]);
-  let a = 64;
-  let cnt = 0;
-  for (let i = 1; i <= a; i *= 2) {
-    if (x & i) cnt++;
+while (target !== total) {
+  if (total > target) {
+    let cut = bars.pop() / 2;
+    bars.push(cut);
+    if (bars.reduce((a, b) => a + b, 0) < target) {
+      bars.push(cut);
+    }
   }
-  console.log(cnt);
-});
+  total = bars.reduce((a, b) => a + b, 0);
+}
+
+console.log(bars.length);
