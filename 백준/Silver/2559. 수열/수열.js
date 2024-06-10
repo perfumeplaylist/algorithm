@@ -1,19 +1,14 @@
-const readline = require("readline");
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n');
+const [N, K] = input.shift().split(' ').map(Number)
+const temps = input[0].split(' ').map(Number)
+let curr = temps.slice(0, K).reduce((acc, value) => {
+    return acc + value
+}, 0)
 
-let input = [];
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  const [n, k] = input[0].split(" ").map(Number);
-  const temp = input[1].split(" ").map(Number);
-  const prev = Array.from({ length: temp.length }, () => 0);
-  let ret = -987654321;
-  for (let i = 1; i <= n; i++) prev[i] = temp[i - 1] + prev[i - 1];
-  for (let i = k; i <= n; i++) ret = Math.max(ret, prev[i] - prev[i - k]);
-  console.log(ret);
-  process.exit();
-});
+let max = curr
+for (let i = K; i < N; i++) {
+  curr = curr - temps[i - K] + temps[i]
+  max = Math.max(max, curr)
+}
+
+console.log(max)
