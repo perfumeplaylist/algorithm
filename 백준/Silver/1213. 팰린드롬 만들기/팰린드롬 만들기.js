@@ -6,44 +6,39 @@ const rl = readline.createInterface({
 
 let input = [];
 
-function solution() {
-  let ret = "",
-    mid = "",
-    flag = 0,
-    cnt = 0;
-  let num = new Array(26).fill(0);
-
-  for (let a of input) for (let s of a) num[s.charCodeAt(0) - 65]++;
-
-  for (i = 25; i >= 0; i--) {
-    if (num[i]) {
-      if (num[i] % 2 !== 0) {
-        mid = String.fromCodePoint(i + 65);
-        cnt++;
-        num[i]--;
-      }
-      if (cnt == 2) {
-        flag = 1;
-        break;
-      }
-      for (j = 0; j < num[i]; j += 2) {
-        ret = String.fromCodePoint(i + 65) + ret;
-        ret += String.fromCodePoint(i + 65);
-      }
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  const a = new Array(26).fill(0);
+  let flag = 0;
+  let ok = 0;
+  let ret = "";
+  let mid = "";
+  input[0].split("").forEach((v) => a[v.charCodeAt(0) - 65]++);
+  for (let i = 25; i >= 0; i--) {
+    const temp = String.fromCharCode(i + 65);
+    let num = a[i];
+    if (num % 2 !== 0) {
+      mid = temp;
+      num--;
+      flag++;
+    }
+    if (flag >= 2) {
+      ok = 1;
+      break;
+    }
+    for (let j = 0; j < num; j += 2) {
+      ret = temp + ret;
+      ret += temp;
     }
   }
-  if (flag) {
+  if (ok) {
     console.log("I'm Sorry Hansoo");
     return;
   } else if (mid) {
-    const temp = ret.split("");
-    temp.splice(ret.length / 2, 0, mid);
-    console.log(temp.join(""));
+    const prev = ret.slice(0, ret.length / 2);
+    const next = ret.slice(ret.length / 2);
+    const temp = prev + mid + next;
+    console.log(temp);
+    return;
   } else console.log(ret);
-}
-
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  solution();
+  return;
 });
