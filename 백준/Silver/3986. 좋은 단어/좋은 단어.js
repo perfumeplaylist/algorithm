@@ -5,24 +5,17 @@ const rl = readline.createInterface({
 });
 
 let input = [];
-rl.on("line", (line) => {
-  input.push(line);
-}).on("close", () => {
-  const n = parseInt(input[0], 10);
+rl.on("line", (line) => input.push(line)).on("close", () => {
+  const t = Number(input[0]);
+  const a = input.slice(1).map((v) => v.split(""));
   let cnt = 0;
-  for (let i = 1; i <= n; i++) {
-    const temp = input[i];
+  for (const temp of a) {
     let stk = [];
-    for (let k = 0; k < temp.length; k++) {
-      if (stk.length) {
-        if (stk[stk.length - 1] === temp[k]) {
-          stk.pop();
-        } else {
-          stk.push(temp[k]);
-        }
-      } else {
-        stk.push(temp[k]);
-      }
+    let i = 0;
+    for (const t of temp) {
+      if (i === 0 || stk[stk.length - 1] !== t) stk.push(t);
+      else stk.pop();
+      i++;
     }
     if (!stk.length) cnt++;
   }
