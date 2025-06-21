@@ -1,20 +1,28 @@
-function go(idx,visited,computers){
-    visited[idx]=1;
-    for(let i=0;i<computers[idx].length;i++){
-        if(visited[i] || !computers[idx][i]) continue;
-        go(i,visited,computers);
+function dfs(here,visited,a){
+    visited[here]=1;
+    for(const there of a[here]){
+        if(visited[there]) continue;
+        dfs(there,visited,a);
     }
-    return;
 }
 
 function solution(n, computers) {
-    let answer = 0;
-    const visited=Array.from({length:n},()=>0);
+    let cnt=0;
+    const visited=Array(computers.length);
+    const list=Array.from({length:computers.length},()=>[]);
+    
     for(let i=0;i<n;i++){
-        if(!visited[i]){
-            go(i,visited,computers);
-            answer++;
+        for(let j=0;j<computers[i].length;j++){
+            if(i!==j && computers[i][j]){
+                list[i].push(j);
+            }
         }
     }
-    return answer;
+    for(let i=0;i<n;i++){
+            if(!visited[i]){
+                dfs(i,visited,list)
+                cnt++;
+            }
+    }
+    return cnt;
 }
