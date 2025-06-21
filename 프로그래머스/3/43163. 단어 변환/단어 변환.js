@@ -1,33 +1,31 @@
-function canTransform(word1,word2){
-    let diffCnt=0;
-    for(let i=0;i<word1.length;i++){
-        if(word1[i]!==word2[i]) diffCnt++;
-        if(diffCnt>1) return false;
+function isDiffOne(a, b) {
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) diff++;
+    if (diff > 1) return false;
+  }
+  return diff === 1;
+}
+
+function bfs(begin, target, words) {
+  const visited = new Set();
+  const q = [{ temp: begin, ret: 0 }];
+
+  while (q.length) {
+    const { temp, ret } = q.shift();
+    if (temp === target) return ret;
+
+    for (const word of words) {
+      if (!visited.has(word) && isDiffOne(temp, word)) {
+        visited.add(word);
+        q.push({ temp: word, ret: ret + 1 });
+      }
     }
-    return diffCnt===1;
+  }
+
+  return 0;
 }
 
 function solution(begin, target, words) {
-    let answer = 987654321;
-    const isIncludeWords=words.indexOf(target);
-    if(isIncludeWords===-1) return 0;
-    const stk=[];
-    const visited={};
-    visited[begin]=1;
-    stk.push({word:begin,cnt:0});
-    while(stk.length){
-        const {word,cnt}=stk.shift();
-        if(word===target){
-            answer=Math.min(cnt,answer);
-            continue;
-        }
-        for(const w of words){
-            let tempCnt=0;
-            if(canTransform(w,word) && !visited[w]){
-                visited[w]=1;
-                stk.push({word:w,cnt:cnt+1})
-            }
-        }
-    }
-    return answer
+  return bfs(begin, target, words);
 }
