@@ -1,5 +1,8 @@
 function solution(numbers) {
-    const answer = numbers.map((value)=>new String(value)).sort((a,b)=>(b+a)-(a+b)).join("");
-    
-    return answer[0]==='0' ?'0':answer;
+  const result = numbers
+    .map(String)
+    .sort((a, b) => (b + a).localeCompare(a + b))
+    .join("");
+
+  return result[0] === "0" ? "0" : result;
 }
