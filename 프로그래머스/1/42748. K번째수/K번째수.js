@@ -1,6 +1,13 @@
 function solution(array, commands) {
-    return commands.map(([i, j, k]) => {
-        // i-1 ~ j까지 자르고, 정렬 후 k번째 값 반환
-        return array.slice(i - 1, j).sort((a, b) => a - b)[k - 1];
-    });
+    const answer = [];
+    for(const command of commands){
+        const [i,j,k]=command;
+        const temp=[]
+        for(let a=i-1;a<=j-1;a++){
+            temp.push(array[a]);
+        }
+        temp.sort((a,b)=>a-b);
+        answer.push(temp[k-1]);
+    }
+    return answer;
 }
